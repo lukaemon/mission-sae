@@ -1,4 +1,5 @@
 # mission-sae
+Create virtual environment, `python=3.11` and install `requirements.txt`. 
 
 ## d1
 As a gpu poor, I'm getting depressed to the dire future of working on model capability. Q*, MCTS, world model, multi-agent RL, evolutionary algorithm are all cool and promising but require access to a frontier model and 10k h100. Last time I check, I'm not in a frontier lab. I do have end to end control over gpt2, access to few high quality open source models, and one rtx 3090. Could burn money on lambdalabs but to what end? 
@@ -11,4 +12,9 @@ Recently all big three, google, openai, anthropic, release papers about SAE, whi
 Take a look. It's so beautiful. The whole learning process could be automated in near future. The crazy high dimension hidden space of a cutting edge model could be represented in human understandable way, and those are levers one could pull to change model behavior??? Call me a weirdo but this is gold. 
 ![](asset/feature_splitting.png) 
 
-In context prompt engineering plus feature steering is literately what psychiatrist does to a patient with conversation and medicine. SAE seems fun and feasible. Given that I happen to be reading `The Martian` recently, it would be funny to chronicle my journey of playing with SAE. So here I am. Day one. 
+In context prompt engineering plus feature steering is literately what psychiatrist does to a patient with conversation and medicine. SAE seems fun and feasible. Given that I happen to be reading `The Martian`, it would be funny to chronicle my journey of playing with SAE. So here I am. Day one. 
+
+## d2
+[top-k SAE](https://arxiv.org/abs/2406.04093) is SOTA and code is released. Make sense to reproduce the paper on gpt2-small. Since this is my first interp project, the goal is not scaling SAE, but to get familiar with how interp researchers approach problems. 
+
+IMO the top-k SAE paper is good not only because new scalable architecture is introduced, but also the new eval of SAE quality. The later is as important as the former. Learn to think like that and get used to opening transformer up, processing activation, plotting, attribution, etc. Next generation of `neurosurgeon` is in the making lol. 
