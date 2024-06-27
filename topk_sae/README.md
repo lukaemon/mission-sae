@@ -11,4 +11,27 @@ Create virtual environment, `python=3.11` and install `requirements.txt`.
 - The main demo notebook for `transformer_lens` is long and packed. Let's skim through and try to catch main points as much as possible. Then divide and reproduce on the second round. 
 - With `t_lens` package, I could see a path to reproduce 4.1 `downstream loss`, and 4.5 `ablation sparsity`. Don't understand the other two enough. Forget about training and scaling law for now. Focus on what's feasible in front of me.
 - At this point, I've implemented gpt2 style transformer from scratch many times, and I still feel there is so much I don't understand about the model. Residual stream and autoregressive multihead attention are really ... deep. ![](../asset/unrolled_transformer.png)
-- 
+- It turns out, studying merch interp really helps with understanding fundamentals about transformer and modern ai. 
+- Can't imagine without `t_lens`, I'll have to Frankenstein-ize my `gpt2.py` to what extend to support such level intervention.
+- First time witnessing `induction head` with close details. Wow, really gives you hope that understand a complex model is possible. I know it's just 2 circuits and simple pattern, but still love the goosebumps. 
+- Reading jupyter notebook of merch interp research is like watching video of neurosurgical operation, or psychiatry session. Same wow level but big differences: controllability and reproducibility. 
+> In GPT-2, 50256 signifies both the beginning of sequence, end of sequence and padding token
+- I assumed gpt2 has not bos and padding for so long lol. 
+- With recent interactions with Sonnet 3.5 and Neel's educational materials, I realize that `talent density` is a moat. Cross pollination and accelerated iteration create real quantum leap over mediocre environments. 
+- More on `BOS`, didn't know these before. 
+> - attention patterns are a probability distribution and so need to add up to one, so to simulate being "off" they normally look at the first token. Giving them a BOS token lets the heads rest by looking at that, preserving the information in the first "real" token.
+> - *some* models are trained to need a BOS token (OPT and my interpretability-friendly models are, GPT-2 and GPT-Neo are not). But despite GPT-2 not being trained with this, empirically it seems to make interpretability easier.
+- `BOS` is a meditation token. 'Focus on your breathe...' and don't mess with anything. Om~~~
+    - Can confirm, both `om`(296) and ` om`(39030) are tokens in gpt2 code book. Probably not related to om~~~ at all. 
+- Low rank and multihead attention. This is simply beautiful. 
+    >As argued in [A Mathematical Framework](https://transformer-circuits.pub/2021/framework/index.html), an unexpected fact about transformer attention heads is that rather than being best understood as keys, queries and values (and the requisite weight matrices), they're actually best understood as two low rank factorized matrices.
+    >* **Where to move information from:** $W_QK = W_Q W_K^T$, used for determining the attention pattern - what source positions to move information from and what destination positions to move them to.
+    >    * Intuitively, residual stream -> query and residual stream -> key are linear maps, *and* `attention_score = query @ key.T` is a linear map, so the whole thing can be factored into one big bilinear form `residual @ W_QK @ residual.T`
+    >* **What information to move:** $W_OV = W_V W_O$, used to determine what information to copy from the source position to the destination position (weighted by the attention pattern weight from that destination to that source).
+    >    * Intuitively, the residual stream is a `[position, d_model]` tensor (ignoring batch). The attention pattern acts on the *position* dimension (where to move information from and to) and the value and output weights act on the *d_model* dimension - ie *what* information is contained at that source position. So we can factor it all into `attention_pattern @ residual @ W_V @ W_O`, and so only need to care about `W_OV = W_V @ W_O`
+    >* Note - the internal head dimension is smaller than the residual stream dimension, so the factorization is low rank. (here, `d_model=768` and `d_head=64`)
+- Having trouble grasping nuances between ov, qa circuit, low rank, eigenvalue and eigenvector. 
+    - Like: "what happens to the eigenvectors" is a decent proxy for what happens to an arbitrary vector.
+    - How does it make sense? e-vec would only scale, while general vec would go through many other transforms. 
+- With `HookedRootModule` and `HookPoint`, I adopt general model inference code to support merch interp. Model codes are getting hyper specialized. A model could be trained in pure c. A version tailor to inference throughput or latency to first token. Yet another version for merch interp. It's the same set of underlying matrices. 
+- The first pass is brutal but rewarding. Second pass for reproduction would be even more exciting. The third pass would be enlightening, as usual. 

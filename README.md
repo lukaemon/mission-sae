@@ -41,7 +41,7 @@ Just realized that 20% tip for a normal 3 people family dinner is easily 10+ cos
 
 ## 0626
 Now that sink is in and settled. Back to think. 2 thoughts emerge: 
-1. Scaling SAE would be a great learning process. However, this is can't be the gpt2 moment of merch interp.
+1. Scaling SAE would be a great learning process. However, this can't be the gpt2 moment of merch interp.
     - llama3 70b is trained with 15t tokens. It has 80 layers. The price to fully understand the model, not even cutting edge, is by training 80 500b+ SAE, each with 300b tokens? Fuck no.  
     - Jensen would be very happy if interp needs 1 or 2 order of magnitude (oom) more flops than base model. No. We can do better. 
     - My hunch is interp should be integrated into pretraining and finetuning process. It should be built in, not add on. 
@@ -59,6 +59,39 @@ The gpt2 moment question is: what is missing to make us confident wrt safety to 
 > I see contempt on you face when I say today I fancy a costco hotdog. Why?  
 > --> That's cheap even in human standard.  
 > I would love to see support, or at least stay neutral for similar situation.  
-> --> Ok. (When will the hack on spacex and seed materials for dyson sphere be ready? Playing dump with this idiot is even harder than solving cancer.)
+> --> Ok. (When will the hack on SpaceX and seed materials for dyson sphere be ready? Playing dumb with this idiot is even harder than solving cancer.)
 
 ... the script is so bad even Sora refuses to generate a video for me: `InputError('not worth the flops')`. 
+
+# 0627
+Finished first pass on `t_lens` library demo. What a great document. Operation details aside, the most memorable 'aha' is `induction head`. 
+
+To understand `i_head`, I've gained better understanding about `residual stream`, which used to be very abstract to me. 
+- Information is encoded as vector. The meaning of vector is encoded as direction in the hidden space. The whole transformer operation is highly 'normalized'. 
+- Info flow from previous tokens to later tokens. Lower layers to higher layers. Residual connection is a genius design. 
+- Mutihead attention controls cross token info movement. FFN act as key-value information retrieval. 
+- Residual stream is represented as `[position, d_model]`. `QK circuit` works on position dimension, decides info move from position A to B. `OV circuit` works on d_model dimension, decides what info to move. 
+- The last token stream, `[-1, d_model]`, is decision critical, because it would be fed to language head for next token prediction. Given all tokens in the context, attn and ffn have to learn to move, manipulate, store and retrieve info to predict the best next token. 
+- Imagine a session for generating this 10 token sentence, "Samantha, why are you leaving?":
+    ```
+    ['<|endoftext|>',
+    'S',
+    'aman',
+    'tha',
+    ',',
+    ' why',
+    ' are',
+    ' you',
+    ' leaving',
+    '?']
+    ```
+    - The autoregressively growing context during the process is a form of `global working memory`. Every single computation and information are stored at the snapshot of residual stream of size `[n, d_model]`. 
+    - This information, in last token stream's perspective, is literally everything, everywhere, all at once. The question is how to use it for what purpose. 
+    - Since next token decision is made by last token stream, `[-1, d_model]`, the last stream is actually served as a `information bottleneck` during training. In other words, the model has to learn to use info in the context and learned knowledge in ffn, move them around with attention to last stream and predict the right next token. Repeat this process for 15t tokens Omg. 
+    - Mathematically learning in this way is compression. It's modeling joint distribution of all tokens in the codebook. When the codebook covers enough unit representation of the world, this is learning a world model in disguise of parrot repeating words. 
+
+Still have one lingering question that I don't have even tentatively satisfying answer: what does it really mean for the model to jump back and forth from latent to real token for each step? 
+
+Somehow I feel action grounds more world experiences than language. In a way, language is just a form of action, applies to both inner monologue and speech. Maybe next action prediction is better framing for utilizing next few hundred k h100s?
+
+Silly questions... Time for a walk. 
