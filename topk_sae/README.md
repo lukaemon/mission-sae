@@ -35,3 +35,10 @@ Create virtual environment, `python=3.11` and install `requirements.txt`.
     - How does it make sense? e-vec would only scale, while general vec would go through many other transforms. 
 - With `HookedRootModule` and `HookPoint`, I adopt general model inference code to support merch interp. Model codes are getting hyper specialized. A model could be trained in pure c. A version tailor to inference throughput or latency to first token. Yet another version for merch interp. It's the same set of underlying matrices. 
 - The first pass is brutal but rewarding. Second pass for reproduction would be even more exciting. The third pass would be enlightening, as usual. 
+- Can totally see why interp on LM could be a heaven for neuroscientist. The level of control and feasible experimentation is no comparison. If I were a neuroscientist, would definitely jump camp with no hesitation. 
+- `run_with_cache` is access to activation of all hooks. Great for offline analysis. 
+- `run_with_hooks` is taking action during runtime. The action, aka hook function, could be passive, simply observe the activation, do some analysis and go. It could also change the activation directly. 
+- [tag] with runtime activations, static param weight as functional circuits, and tools like `t_lens` and more, merch interp is the process to study model by the loop of where to look, poke with what, why does it matter.
+- I'm not familiar with the tool yet but that's not important. What's important is to build the solid scientific reasoning framework to ground intervention and making conclusions. Don't know where to poke is ok, making wrong conclusion, believe it, use it to guide future experiment and learning would be lethal.
+- Eval section would be more important than architecture of training detail for me for a while. Learn to ask good question, and make logically sound conclusion first. Tools would catch up later automatically. 
+- Now I know what I miss, oh boy. `activation patching`'s operation totally makes no sense to me, but the conclusion is so understandable. 

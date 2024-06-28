@@ -95,3 +95,5 @@ Still have one lingering question that I don't have even tentatively satisfying 
 Somehow I feel action grounds more world experiences than language. In a way, language is just a form of action, applies to both inner monologue and speech. Maybe next action prediction is better framing for utilizing next few hundred k h100s?
 
 Silly questions... Time for a walk. 
+
+# 0628
