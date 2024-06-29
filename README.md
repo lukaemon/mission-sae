@@ -97,3 +97,7 @@ Somehow I feel action grounds more world experiences than language. In a way, la
 Silly questions... Time for a walk. 
 
 # 0628
+`Activation patching` is equivalent to 'action produces information.' It produces the best kind of information that includes both observation and a strong causal relationship.
+
+--
+Induction head reproduced. Feeling comfortable with hooks now. Ready to take on 4.1 downstream loss with topk SAE on gpt2 small. 
