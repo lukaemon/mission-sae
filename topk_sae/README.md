@@ -43,3 +43,4 @@ Create virtual environment, `python=3.11` and install `requirements.txt`.
 - Eval section would be more important than architecture of training detail for me for a while. Learn to ask good question, and make logically sound conclusion first. Tools would catch up later automatically. 
 - Now I know what I miss, oh boy. `activation patching`'s operation totally makes no sense to me, but the conclusion is so understandable. 
 - Second pass is way better. Doing this IOI and `activation patching` work is way more software engineering and scientific method than flop power or deep math. 
+- 

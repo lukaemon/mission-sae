@@ -100,4 +100,26 @@ Silly questions... Time for a walk.
 `Activation patching` is equivalent to 'action produces information.' It produces the best kind of information that includes both observation and a strong causal relationship.
 
 --
-Induction head reproduced. Feeling comfortable with hooks now. Ready to take on 4.1 downstream loss with topk SAE on gpt2 small. 
+
+Induction head reproduced. Feeling comfortable with hooks now. Ready to take on 4.1 downstream loss with topk SAE on gpt2 small. Seriously, can't imagine what kind of Frankenstein code I would have to generate to mess with the model if `t_lens` doesn't exist. Must be fun to watch ...
+
+# 0629
+Typical eval on SAE is sparsity and reconstruction. Since the sparsity is directly controlled by topk function, I could play with MSE as a warm up. OAI released 2 SAE for gpt2 small: `v5_32k` and `v5_128k`. That's 2 points in the fig 1 right. ![](asset/topk_sae_fig1.png)
+
+It occurs to me that scaling law research is actually very similar to astrophysics. 
+
+First of all, and maybe the most important premise: human, me of course, is really bad at grasping the implication of patterns in exponential scale. The same as I believe most human would be shocked to [REALIZE how empty the space actually is](https://www.joshworth.com/dev/pixelspace/pixelspace_solarsystem.html). 
+
+The exponential space in scaling law research is like the vast, empty outer space. Those dots and patterns on fig1 is beautiful and deep. Can you see the enlightenment? Even me at C. elegans level intelligence can see it. Fig1 is screaming something very important: `$$$`. (this message is approved by Jensen) 
+
+-- 
+
+My opinion on SAE and interp as of today: it's not feasible in current form. It remains to be an important step of the long arc to understand and control next gen model. Reasons:
+1. 16m SAE is a `274b+` param dense model[^1]. (thinking about 400b dense llama3, or 540b good old PaLM)
+2. 16m topk SAE is at 10% gpt4 wrt downstream loss.
+3. Scaling effect is weaker for lower active latents. 
+4. 32 features for a token gen is headache enough to understand. I don't know how to make sense of 512 features or more. 
+
+But hey this is frontier research. Just keep exploring and be ready to change when new knowledge come in. 
+
+[^1]: 2**24 * 2 * 8192, where 8192 is just a placeholder for gpt4 `d_model`. 
