@@ -43,4 +43,10 @@ Create virtual environment, `python=3.11` and install `requirements.txt`.
 - Eval section would be more important than architecture of training detail for me for a while. Learn to ask good question, and make logically sound conclusion first. Tools would catch up later automatically. 
 - Now I know what I miss, oh boy. `activation patching`'s operation totally makes no sense to me, but the conclusion is so understandable. 
 - Second pass is way better. Doing this IOI and `activation patching` work is way more software engineering and scientific method than flop power or deep math. 
+- I need `openwebtext`. 
+- Need one pass of subset `owt` to get original loss. Another pass to get MSE and SAE modified loss. 
+- With `stanford-gpt2-small` I could even find out both `32k` and `128k` SAE is at what gpt2-small computation level wrt downstream loss.  
+- Still amazes me that it only takes 4 mins to tokenize the whole `owt` on consumer CPU. 
+- How does batch size affect the activation? At the end of the day, I'm computing mse per token activation, so larger batch size is just helping me push through the tokens faster.
+- For computing MSE for both 32k and 128k SAE on gpt2 small, a 3090 could push 19k tps with batch_size 256, seq_len 64. 100% util, 24g vram full. 
 - 

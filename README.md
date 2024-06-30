@@ -116,10 +116,14 @@ The exponential space in scaling law research is like the vast, empty outer spac
 
 My opinion on SAE and interp as of today: it's not feasible in current form. It remains to be an important step of the long arc to understand and control next gen model. Reasons:
 1. 16m SAE is a `274b+` param dense model[^1]. (thinking about 400b dense llama3, or 540b good old PaLM)
-2. 16m topk SAE is at 10% gpt4 wrt downstream loss.
+2. 16m SAE is at 10% gpt4 wrt downstream loss.
 3. Scaling effect is weaker for lower active latents. 
-4. 32 features for a token gen is headache enough to understand. I don't know how to make sense of 512 features or more. 
+4. 32 features for a token gen is a headache enough to understand. I don't know how to make sense of 512 features or more. 
 
 But hey this is frontier research. Just keep exploring and be ready to change when new knowledge come in. 
+
+-- 
+
+MSE for 32k and 128k SAE, with `openwebtext` data is done. But somehow, I don't know if I'm doing it right. Hmmmm...
 
 [^1]: 2**24 * 2 * 8192, where 8192 is just a placeholder for gpt4 `d_model`. 

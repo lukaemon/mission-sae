@@ -7,3 +7,6 @@ numpy==1.26.4
 transformer_lens
 circuitsvis
 plotly
+
+datasets
+tiktoken
