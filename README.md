@@ -115,7 +115,8 @@ The exponential space in scaling law research is like the vast, empty outer spac
 -- 
 
 My opinion on SAE and interp as of today: it's not feasible in current form. It remains to be an important step of the long arc to understand and control next gen model. Reasons:
-1. 16m SAE is a `274b+` param dense model[^1]. (thinking about 400b dense llama3, or 540b good old PaLM)
+1. 16m SAE is a `274b+` param dense model. (thinking about 400b dense llama3, or 540b good old PaLM)
+    -  2**24 * 2 * 8192, where 8192 is a placeholder number for gpt4 `d_model`. 
 2. 16m SAE is at 10% gpt4 wrt downstream loss.
 3. Scaling effect is weaker for lower active latents. 
 4. 32 features for a token gen is a headache enough to understand. I don't know how to make sense of 512 features or more. 
@@ -126,4 +127,11 @@ But hey this is frontier research. Just keep exploring and be ready to change wh
 
 MSE for 32k and 128k SAE, with `openwebtext` data is done. But somehow, I don't know if I'm doing it right. Hmmmm...
 
-[^1]: 2**24 * 2 * 8192, where 8192 is just a placeholder for gpt4 `d_model`. 
+
+# 0630
+Delta cross entropy for 32k and 128k SAE is easy. Small tweak of MSE code would do.
+
+In paper:
+> Instead, we believe a more natural metric is to consider the relative amount of pretraining compute needed to train a language model of comparable downstream loss. For example, when our 16 million latent autoencoder is substituted into GPT-4, we get a language modeling loss corresponding to 10% of the pretraining compute of GPT-4.
+
+I'm going to reproduce that on `stanford-gpt2-small-a`, which is has [600 checkpoints](https://github.com/stanford-crfm/mistral?tab=readme-ov-file#resources).
