@@ -31,7 +31,7 @@ Back of envelope shows 34m SAE for Sonnet 3.0 is at least `550b` params. AND it'
 
 > ... when our 16 million latent autoencoder is substituted into GPT-4, we get a language modeling loss corresponding to 10% of the pretraining compute of GPT-4.
 
-16m SAE is > `200b`. That SAE for one layer, and say we got perfect scaling 10x to recover 100% gpt4, that's `2t` SAE. Are you sure the first author of these papers is not Jensen Huang? What's funny is gpt4 here now is in 'I don't care if the weight is leaked to CCP' category. GPT5 would be 10x compute and even harder to 'interpret'. 
+16m SAE is > `200b`. That is SAE for one layer, and say perfect scaling 10x to recover 100% gpt4, that's `2t` SAE. Are you sure the first author of these papers is not Jensen Huang? What's funny is gpt4 here now is in 'I don't care if the weight is leaked to CCP' category. GPT5 would be 10x compute and even harder to 'interpret'. 
 
 Fuck it. I'm hungry. Lunch time. Today I fancy a costco hotdog.
 
@@ -134,4 +134,35 @@ Delta cross entropy for 32k and 128k SAE is easy. Small tweak of MSE code would 
 In paper:
 > Instead, we believe a more natural metric is to consider the relative amount of pretraining compute needed to train a language model of comparable downstream loss. For example, when our 16 million latent autoencoder is substituted into GPT-4, we get a language modeling loss corresponding to 10% of the pretraining compute of GPT-4.
 
-I'm going to reproduce that on `stanford-gpt2-small-a`, which is has [600 checkpoints](https://github.com/stanford-crfm/mistral?tab=readme-ov-file#resources).
+I'm going to reproduce that on `stanford-gpt2-small-a`, which is has [609 checkpoints](https://github.com/stanford-crfm/mistral?tab=readme-ov-file#resources). This is a search problem. CS 101 divide and conquer. ![](asset/stanford_gpt2small_checkpoint.png)
+
+X axis of the graph is the index of the checkpoint. Y axis is corresponding training step. It's not linear because the checkpoint schedule gives early steps more snapshots. 
+```
+checkpoint schedule:
+Every 10 Steps, for the first 0 - 100 Steps.
+Every 50 Steps, from 100 - 2000 Steps.
+Every 100 Steps, from 2000 - 20,000 Steps.
+Every 1000 Steps, from 20,000 - 400,000 Steps.
+```
+20k step is `ckpt[228]`(0 index). After that step/index is linear.
+400k step is 100% pretraining compute, which is `ckpt[608]`.
+I'll just start with `ckpt[300]`, and keep going recursively till I find a checkpoint with loss is close enough to SAE reconstruction loss. Doing this manually is too boring so let's one shot automating the search process. Just for fun lol.
+
+-- 
+
+Ok, after 2 mins I realize quicksort approach is interesting but not practical. Divide and conquer would work only if loss is a monotonically decreasing function of pretraining compute. My hunch says no. Even in small scale, scaling law is messy. Before quicksort, I would like to find out real compute-loss relationship first. Just a little detour. The plan is forgetting about early stage, take evenly spaced 10 checkpoints after `ckpt[228]` and make a step-loss graph. 
+
+-- 
+
+![](asset/step_vs_loss_gpt2small.png)
+Actually, it's pretty monotonic. What a hunch lmfao. Yet another great lesson of:
+> I have a great idea! Let's ask reality for its opinion.
+
+Now that I got this step v. loss from original model, could just compute the SAE loss and eyeball the rough step loss level. 
+
+-- 
+
+Today is a good day. The weather is ... No!!! Fuck! 
+After all morning messing around and I realize OAI SAE is trained on OAI gpt2. Use that on stanford gpt2, the loss is horrible, of course. It's like applying my father's psychoanalysis result on me to interpret my behaviors. Wait ... that might actually work better for males in general than my stupid OAI SAE on stanford gpt circus move. However, this detour has one upside: dum dum learn to train SAE from scratch.
+
+However, I could still savage the situation. OAI SAE 32k has delta loss `~0.1` over vanilla gpt2-small. Assume my from scratch SAE on stanford gpt2-small has the same delta loss, according to step v. loss figure above, that puts it between step 58k(`~3.54`) and 96k(`~3.50`). Back of envelop interpolation says that is around 86k step loss level, `21.5%`. Will revisit this estimation later. 

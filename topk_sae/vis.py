@@ -23,5 +23,5 @@ def scatter(x, y, xaxis="", yaxis="", caxis="", renderer=None, **kwargs):
     x = utils.to_numpy(x)
     y = utils.to_numpy(y)
     px.scatter(
-        y=y, x=x, labels={"index": xaxis, "value": yaxis, "color": caxis}, **kwargs
+        y=y, x=x, labels={"x": xaxis, "y": yaxis, "color": caxis}, **kwargs
     ).show(renderer)
