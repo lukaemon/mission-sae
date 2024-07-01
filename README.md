@@ -165,4 +165,45 @@ Now that I got this step v. loss from original model, could just compute the SAE
 Today is a good day. The weather is ... No!!! Fuck! 
 After all morning messing around and I realize OAI SAE is trained on OAI gpt2. Use that on stanford gpt2, the loss is horrible, of course. It's like applying my father's psychoanalysis result on me to interpret my behaviors. Wait ... that might actually work better for males in general than my stupid OAI SAE on stanford gpt circus move. However, this detour has one upside: dum dum learn to train SAE from scratch.
 
-However, I could still savage the situation. OAI SAE 32k has delta loss `~0.1` over vanilla gpt2-small. Assume my from scratch SAE on stanford gpt2-small has the same delta loss, according to step v. loss figure above, that puts it between step 58k(`~3.54`) and 96k(`~3.50`). Back of envelop interpolation says that is around 86k step loss level, `21.5%`. Will revisit this estimation later. 
+I could still salvage the situation. OAI SAE 32k reconstruction activation has delta loss `~0.1` over gpt2-small. Assuming my from scratch SAE on stanford gpt2 has the same delta, according to step v. loss figure above, that puts it between step 58k(`~3.54`) and 96k(`~3.50`). Back of envelope interpolation says that is around 86k step loss level, `21.5%`. Will revisit this estimation later. 
+
+# 0701
+Reread the topk SAE paper for the rest of 3/4 eval metrics to pick a next target wrt `feasibility`, `expected learning` and `skill issue`. Yeah, skill issue ... It has been all about skill issue. Since when it's not. To some extend, being gpu poor is just another skill issue in excuse of lack of physical resource. 
+
+**4.2 Probe loss**:  
+$$\min_{i, w, b} \mathbb{E} \left[ y \log \sigma (wz_i + b) + (1 - y) \log (1 - \sigma (wz_i + b)) \right]$$
+
+```
+for task in 61_task:
+    for feature in all_learned_sae_feature:
+        train a logistic regression model
+```
+
+Task data is aggregated from various papers. I could pick few from `table 1` and `fig 33` to reproduce probe loss on gpt2. 
+
+`fig 33` caught my attention. ![](asset/tok_sae_fig33.png)
+- It took 16M SAE 10b tokens to start getting these probe features on gpt4.
+- 16m SAE learns different prescribed probe features differently. 
+
+Fair to assume GPT4 has what it takes to solve all 61 probe tasks. If it still took a 16m SAE 10b tokens to get anything because of this experiment setup, it's fair to assume high probability of getting nothing with a 32k SAE 1b token on gpt2. 
+
+Reproduce? Pass. If I really feel strong to see it through later, I could try `sex_or_gender` and `mc_taco` probe. They are the the most responsive ones.
+
+--
+
+**4.3 Explainablity**:    
+`N2G` outputs explanations in the form of collections of n-grams with wildcards. Finally understand what it does with relevant code released 4 days ago. Love this idea. 
+
+Raised issue about `illusion of interpretability` is real and the trade off between precision and recall is spot on. The whole process feels like building a tokenizer, and the explanation is done by a simplified regex expression. 
+
+4.4 combines N2G with delta loss. Make sense to measure loss degrades in this way.
+
+Reproduce? Feasible on gpt2. `E(learning)` is high. However, the whole operation and `trie` data structure is a bridge too far with my current skill level. Will pass for now. Have to push through later on this one. Keep it in mind and build skills and confidence. 
+
+--
+
+**4.5 Ablation sparsity**:  
+Ablate on SAE feature and measure logit diff sparsity with $(\frac{L1}{L2})^2$. Reasonable method to test this [hypo]:
+> If the underlying computations learned by a language model are sparse, one hypothesis is that natural features are not only sparse in terms of activations, but also in terms of downstream effects
+
+Reproduce? Yes. Feasible on gpt2 and open sourced SAEs. `E(learning)` is mid since I could already simulate the whole code in mind. It's a simple and effective method. This is the next target!
