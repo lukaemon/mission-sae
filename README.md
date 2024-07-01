@@ -203,7 +203,19 @@ Reproduce? Feasible on gpt2. `E(learning)` is high. However, the whole operation
 --
 
 **4.5 Ablation sparsity**:  
-Ablate on SAE feature and measure logit diff sparsity with $(\frac{L1}{L2})^2$. Reasonable method to test this [hypo]:
+Ablate on SAE feature and measure logit diff sparsity with $(\frac{L1}{L2})^2$. Reasonable method to test the hypothesis:
 > If the underlying computations learned by a language model are sparse, one hypothesis is that natural features are not only sparse in terms of activations, but also in terms of downstream effects
 
-Reproduce? Yes. Feasible on gpt2 and open sourced SAEs. `E(learning)` is mid since I could already simulate the whole code in mind. It's a simple and effective method. This is the next target!
+Reproduce? Yes. Feasible on gpt2 and open sourced SAEs. `E(learning)` is mid since I could already simulate the whole code in mind. It's a simple and effective method. This is the next target! Now a lunch is earned. 
+
+-- 
+
+`E(learning)=mid` is good. The key is momentum in morale and consistency. 
+- `E(learning)=high` usually comes with skill issue, which probably leads to a dead block. Overall huge blow to the momentum and the effectiveness in the long arc of learning. 
+- Few strategically selected `E(learning)=mid` could unblock an `E(learning)=high`
+- Naively force through an `E(learning)=high` once in a while adds random factor. In general it is a good training on will power. 
+    > I'm doing this because I don't know it's impossible. 
+
+Just be honest and choose wisely. 
+
+Why repeat such obvious meta learning heuristic? Because I'm king of deadlock due to bad taste on choosing challenges. Take a while to recognize the problem and start self-correcting process. 
