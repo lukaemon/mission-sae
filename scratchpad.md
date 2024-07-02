@@ -1,6 +1,3 @@
-Create virtual environment, `python=3.11` and install `requirements.txt`. 
-
-## Log
 - Never dig into scaling law papers before. I can understand the conclusions but having trouble to really appreciate nuances. 
 - I don't get 90% of the paper from the first read few days ago. Didn't even have general idea about SAE, and linear representation hypo and superposition hypo. After few more background papers, today on the second read, I feel way better but still lack so much background knowledge mentioned in the evaluation section. It's critical to see what's wrong right, what's missing and propose possible solutions. 
 - Like first day to medical school and wow human body is complicated ... 

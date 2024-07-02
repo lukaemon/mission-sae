@@ -219,3 +219,38 @@ Reproduce? Yes. Feasible on gpt2 and open sourced SAEs. `E(learning)` is mid sin
 Just be honest and choose wisely. 
 
 Why repeat such obvious meta learning heuristic? Because I'm king of deadlock due to bad taste on choosing challenges. Take a while to recognize the problem and start self-correcting process. 
+
+# 0702
+> ... I could already simulate the whole code blah blah ...
+
+And got stuck for one hour to understand what the paper really want to do. You see, this naive confidence, preformed expectation, and reality check combo is the effective learning triangle. Bruise ego is the only side effect. The missing piece is I don't know how SAE latent ablation work in practice. Go figure. 
+
+--
+
+Found 2 related snippets: 
+[Towards Monosemanticity: Decomposing Language Models With Dictionary Learning](https://transformer-circuits.pub/2023/monosemantic-features/index.html#appendix-feature-ablations)
+> We perform feature ablations by running the model on an entire context up through the MLP layer, running the autoencoder to compute feature activations, subtracting the feature direction times its activation from the MLP activation on each token in the context and then completing the forward pass. We record the resulting change in the predicted log-likelihood of each token in the context ...
+
+Given `feature = feature_activation * feature_direction`, the subtraction of feature is done to native activation. SAE encoder is used to compute feature activation. And SAE decoder provides feature direction. 
+
+[Golden gate SAE](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
+> We implemented feature steering as follows: we decompose the residual stream activity x into the sum of two components, the SAE reconstruction SAE(x) and the reconstruction error error(x). We then replace the SAE(x) term with a modified SAE “reconstruction” in which we clamp the activity of a specific feature in the SAE to a specific value, and leave the error term unchanged. 16 We then run the forward pass of the network in downstream layers using this modified residual stream activity. We apply this manipulation for every model input, and at every token position.
+
+The ablation changes SAE activation reconstruction, which takes place of vanilla model activation to finish the forward pass. 
+
+My hunch is option one. Since 16m SAE is only 10% gpt4, why bother with reconstructed activation at all? But I'll do both for practice and see what I learn. 
+
+--
+
+The track record of your 'hunch' is not good. Why are you still going with it? 
+
+1. Self belief is an important corner stone of character building, and key to effective decision making. Never lose it. 
+2. Blind self-belief is not helpful. Be ready to adopt after reality check. 
+3. Hunch is precomputed expectation, which would provide critical learning signal after reality check. Especially when you are wrong. Accept and review. Delta between expectation and reality is the real world learning gradient to improvements.
+
+The moat of Tesla is human 'intervention' data during full self-driving session at scale. Plus large action trajectory delta recorded in shadow mode. Every single tesla on the road is a probe to reality. Those checks at scale presents a promising approach to close the last few bits on full self-driving policy. 
+
+> I have a great policy, let's hear what reality says. 
+
+--
+
