@@ -254,3 +254,8 @@ The moat of Tesla is human 'intervention' data during full self-driving session 
 
 --
 
+The first draft is too ugly. And the number doesn't match paper's. Try again. 
+
+-- 
+
+Second draft is better, but the number still doesn't match. There are some details I can't get right. Missing info from the paper, and no open source code of this part. Guess the details of ablation and normalization are too common sense to open source. Have to figure out and fill in the blanks, masked language modelling style. 
