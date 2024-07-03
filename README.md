@@ -259,3 +259,22 @@ The first draft is too ugly. And the number doesn't match paper's. Try again.
 -- 
 
 Second draft is better, but the number still doesn't match. There are some details I can't get right. Missing info from the paper, and no open source code of this part. Guess the details of ablation and normalization are too common sense to open source. Have to figure out and fill in the blanks, masked language modelling style. 
+
+# 0703
+Most incremental problems could be solved by a long walk and a good night sleep. 3 missing pieces prevented me from reaching paper's number. One bug, one change, and one new understanding. 
+
+The bug is silly. I forgot to change feature index while looping through topk 32 features for ablation. 1 char change fix. 
+
+The change is subtle which I don't fully understand yet but it works. From paper, `at a particular token index, we obtain the latents at the residual stream ...`
+
+Say I have 64 tokens in the context, which one should I choose as 'particular token'? I just took one from the middle as target, `idx=32`. Then the problem is, what should I do with activations of all previous tokens? Should I also subtract `ablate_feature` from them, or just leave them be. No matter which way I choose, as long as starting from the middle of the context, I got no where close to paper number. Change the starting idx to 0, meaning no previous token, and it works. 
+
+The new understanding is about normalizing `(l1/l2)^2` by `V*T`. After few examples I understand why such normalization could upper bound the metric by 1, and such normalization makes comparison between models possible. 
+
+After all, I got `~19%` from 32k SAE. The official number is `~13%`. However, ablating residual stream channel gives `~25%`, but the official number is `60%`. For now I'll just sweep the difference under "don't know what data they are using, all I have is `openwebtext` rug."
+
+The logical next step is training SAE from scratch. However this is a good stop for consolidating what I've learned. I'll read few papers in the afternoon and regroup. 
+
+-- 
+
+
