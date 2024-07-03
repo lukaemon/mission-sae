@@ -271,10 +271,31 @@ Say I have 64 tokens in the context, which one should I choose as 'particular to
 
 The new understanding is about normalizing `(l1/l2)^2` by `V*T`. After few examples I understand why such normalization could upper bound the metric by 1, and such normalization makes comparison between models possible. 
 
-After all, I got `~19%` from 32k SAE. The official number is `~13%`. However, ablating residual stream channel gives `~25%`, but the official number is `60%`. For now I'll just sweep the difference under "don't know what data they are using, all I have is `openwebtext` rug."
+After all, I got `~19%` from 32k SAE. The official number is `~13%`. Ablating residual stream channels gives `~25%`, but the official number is `60%`. For now I'll just sweep the difference under "don't know what data they are using, all I have is `openwebtext` rug."
 
-The logical next step is training SAE from scratch. However this is a good stop for consolidating what I've learned. I'll read few papers in the afternoon and regroup. 
+The logical next step is training SAE from scratch. This is a good stop for consolidating what I've learned. Will read few more papers and regroup. 
 
 -- 
 
+Somehow I feel [Genie](https://arxiv.org/abs/2402.15391)'s `latent action model` is a key to interp world. ![](asset/lam.png)
+
+The action latent is actually more than action. It could be whatever info that's critical for transitioning one frame to next frame. Also interesting that both encoder and decoder takes multiple previous frames, which ditches the `Markov` assumption for traditional action model. 
+
+![](asset/dynamic_model.png)
+
+The latent is passed into `dynamic model` in embedding form. The overall setup feels like a process to manufacture 1 specialized latent. In this paper, it's mostly used for action, but like I said, it could be anything between 2 frames.
+
+The beauty of explicitly carved out latent is access point of control and intervention. 
+
+If one just train a huge `dynamic model` with next video token prediction, I'm pretty sure with decent spatial temporal video encoder and VQ technique, the info that was captured separately by `latent action model` would be there in the `residual stream` of this end2end model. The problem is, with so many subspaces and tensor flow trajectories, we don't know how to locate and isolate that info. That's why we are dealing with the business of SAE and circuit anatomy.
+
+However, with an explicit `latent action model`, that latent has a clean closure, and ready to be interpreted and intervened. 
+
+Now, the Genie paper's choice of 2d video game is smart because the majority of latent info that cause frame update is user game control input, aka action. It uses environment to bound info variety in LAM. Once the setup is proven feasible, an interesting testbed is born. 
+
+It doesn't have to be video or action. It could be inner monologue or subconsciousness between next language token prediction or next action token prediction. Feels like a `bicameral mind` could be implemented this way. An inner voice to guide AI agent when we need control. A stream of explicitly accessible subconsciousness ready to be analyze when we need to interpret. 
+
+I don't know
+
+-- 
 
