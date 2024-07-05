@@ -287,15 +287,81 @@ The latent is passed into `dynamic model` in embedding form. The overall setup f
 
 The beauty of explicitly carved out latent is access point of control and intervention. 
 
-If one just train a huge `dynamic model` with next video token prediction, I'm pretty sure with decent spatial temporal video encoder and VQ technique, the info that was captured separately by `latent action model` would be there in the `residual stream` of this end2end model. The problem is, with so many subspaces and tensor flow trajectories, we don't know how to locate and isolate that info. That's why we are dealing with the business of SAE and circuit anatomy.
+If one just train a huge `dynamic model` with next video token prediction, I'm pretty sure with decent spatial temporal video encoder and VQ technique, the info that was captured separately by `latent action model` would be there in the `residual stream` of this end2end model. The problem is, with so many subspaces and tensor flow trajectories, we don't know how to locate and isolate that info. That's why we are in the business of SAE and circuit anatomy.
 
-However, with an explicit `latent action model`, that latent has a clean closure, and ready to be interpreted and intervened. 
+With an explicit `latent action model`, that latent has a clean closure, and ready to be interpreted and intervened. 
 
-Now, the Genie paper's choice of 2d video game is smart because the majority of latent info that cause frame update is user game control input, aka action. It uses environment to bound info variety in LAM. Once the setup is proven feasible, an interesting testbed is born. 
+Now, the Genie paper's choice of 2d video game is smart because the majority of latent info that cause frame update is user game control, aka action. It uses environment to bound info variety in LAM. Once the setup is proven feasible, an interesting testbed is born. 
 
-It doesn't have to be video or action. It could be inner monologue or subconsciousness between next language token prediction or next action token prediction. Feels like a `bicameral mind` could be implemented this way. An inner voice to guide AI agent when we need control. A stream of explicitly accessible subconsciousness ready to be analyze when we need to interpret. 
+It doesn't have to be video or action. It could be inner monologue or subconsciousness between next language token prediction or next action token prediction. Feels like a `bicameral mind` could be implemented this way. An inner voice to guide AI agent when we need control. A stream of explicitly accessible subconsciousness ready to be analyzed when we need to interpret. 
 
-I don't know
+I don't know ... Time to walk.
+
+# 0704
+Happy Independence day. Wake up to unmotivated/tired body and mind. Let me channel the inspiring spirit from the past and get the fuck back to work! (doom scrolling x.com)
+
+--
+
+`<reading note>` [A Primer on the Inner Workings of Transformer-based Language Models](http://arxiv.org/abs/2405.00208)
+
+Linear probe learns feature predefined by human. It's a targeted operation and limited by human imagination. SAE learns many features without supervision, but the problem is making sense of them. Just realized that even though topk SAE paper is short, it's very comprehensive:
+1. Replace l1 with topk function to deal with shrinkage.
+2. Scaling law wrt MSE. 
+3. Downstream loss and flops equivalent % as quality proxies to feature. 
+4. Linear probe.
+5. N2G as a step of automatic SAE feature explanation. 
+6. Ablated sparsity to measure downstream effects to show not only the active features are sparse, the downstream effects are sparse as well. Again a quality proxy to feature. 
+
+--
+
+![](asset/tok_emb.png)
+- Token embedding is like `V1` of visual cortex. Each token in the codebook has an anchor in `d_model` space, optimized and ready for layer 1. 
+- Last layer activation is hyper optimized for next token prediction, aka taking action. Similar to `V5/MT` of visual cortex. Even interp research won't take last layer activation. TopK SAE took layer 8 activation, 3/4 of gpt2. 
+- Feeding `h_layer_last` directly to layer 1 for next transformer runtime is like pumping `V5/MT` back to `V1`. Probably won't work. In a sense, language model is actually a full stack perception to action model.
+- Tokenizer plus token embedding is an easy V1 for pure natural language codebook. However, the codebook could be multimodal. For example, Spatial temporal transformer based VQVAE is literally building a `V1`, the visual codebook. 
+- Early fusion of multimodal model aggregates many `[X]1` into one unified codebook. Such as vision(`V1`), audio(`A1`), action and language. 
+- When perception and action are the same modality, next token prediction works very well ,ex: LLM. 
+- When perception and action are different modality, ex: visual language -> motor action, what the objective should be? 
+- I don't find neurosci and cognisci having compelling understandings on multimodal fusion. 
+
+--
+
+The relationship between `copying head`, `ov circuit` and `eigenvector` is very therapeutic.  
+> Positive eigenvalues mean that there exists a linear combination of tokens contributing to an increase in the linear combination of logits of the same tokens. (paper 5.1.2)
+
+Expand on this: 
+- Eigenvalue is the scalar of eigenvector. 
+- Eigenvectors are stationary directions after linear transformation of ov circuit. 
+- Direction in llm model space is meaning, per linear representation hypothesis. 
+- Each eigenvector with positive eigenvalue could be seen as a trigger feature live within the ov circuit.
+
+Connecting dots: certain combination of tokens, precisely embeddings from different token track at layer L, would trigger a ov circuit feature, which would enhance the input by eigenvalue. Overall it's a way to copy/paste info from/to residual stream, hence the name copying head.
 
 -- 
+
+`Induction head` v. `in context learning` gives me goosebumps. 
+> Finally, the emergence rate of induction heads is impacted by the diversity of in-context tokens, with higher diversity in attended and copied tokens delaying the formation of the two respective sub-mechanisms (paper 5.1.2)
+
+ICL on LLM is like a `FPGA` being ad hoc programmed by in context input. The hope is better understanding between what's in context and the programming mechanism of these myriad circuits so that general intelligence could be interfaced by human language. This is super relevant to gemini 1.5 pro's `2m` context window.
+
+--
+
+The whole transformer is a giant fusion reactor of vectors. I'm very interested in this functional perspective of interpretation. 
+> ... language models create vectors representing functions or tasks given in-context examples (paper 5.3)
+> 
+> ... multiple attention heads work together to create “function” or “task” vectors describing the task when given in-context examples (paper 5.4)
+
+[The line between data, function and vector are getting very blurry](https://www.youtube.com/watch?v=LyGKycYT2v0&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=10). It's like the model is screaming "no~~~~ why are you trying so hard to map vector to English? Wrong medium! Can't you think in vector natively? It's better, faster, and more universal. I don't recall speaking in English that hard for me." 
+
+I don't know where it would lead me but oh boy it's sexy. 
+
+`</reading note>`
+
+-- 
+
+A productive reading day. Now ground these learnings to topk SAE.  
+
+Every time I read, I found more depth to this deceptively simple architecture. GPT2 is outdated but still has so much to offer. 
+
+The biggest hit today is functional perspective toward interpretation. Imagine how hard it would be to track down seemingly infinite combination of input dependent transformer circuit, or FFN neuron in super position. Instead, choose a middle layer post MLP activation, train a SAE and focus resource on making sense of them, especially the automatic interpretation route. These SAE features are more easier to interpret and intervene.
 
