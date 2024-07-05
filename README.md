@@ -305,7 +305,7 @@ Happy Independence day. Wake up to unmotivated/tired body and mind. Let me chann
 `<reading note>` [A Primer on the Inner Workings of Transformer-based Language Models](http://arxiv.org/abs/2405.00208)
 
 Linear probe learns feature predefined by human. It's a targeted operation and limited by human imagination. SAE learns many features without supervision, but the problem is making sense of them. Just realized that even though topk SAE paper is short, it's very comprehensive:
-1. Replace l1 with topk function to deal with shrinkage.
+1. SAE training recipe plus one important upgrade: replace l1 with topk function to deal with shrinkage.
 2. Scaling law wrt MSE. 
 3. Downstream loss and flops equivalent % as quality proxies to feature. 
 4. Linear probe.
@@ -364,4 +364,17 @@ A productive reading day. Now ground these learnings to topk SAE.
 Every time I read, I found more depth to this deceptively simple architecture. GPT2 is outdated but still has so much to offer. 
 
 The biggest hit today is functional perspective toward interpretation. Imagine how hard it would be to track down seemingly infinite combination of input dependent transformer circuit, or FFN neuron in super position. Instead, choose a middle layer post MLP activation, train a SAE and focus resource on making sense of them, especially the automatic interpretation route. These SAE features are more easier to interpret and intervene.
+
+# 0705
+[Circuits Updates - June 2024](https://transformer-circuits.pub/2024/june-update/index.html) is great! The info fill in the blank between papers and provide a source for process supervision on how frontier lab researchers think, plan and act. The curated research by other groups is a glimpse into their fucus and taste. Overall, signal/noise is off the chart. Woosa~
+
+> The above results give us confidence that both Gated SAEs and TopK SAEs are strong alternatives to standard SAEs with little downside risk and the potential to be a meaningful improvement. However, it’s still difficult to know whether the basis found by an SAE is better or worse.
+
+> Ultimately SAEs need to be judged on whether they provide additional insight into how the model works - can we use it to debug model issues? For steering? For finding circuits? For understanding the impact of fine-tuning? To improve robustness? It’s clear that the evaluations we have at the moment don’t get to the heart of what we care about and we’re excited to work on that and for future work from others which fills this gap.
+
+Snippets aboves are beautiful. Improvement is not binary, but a multi-dimensional concept. They evaluate change in neutral, objective tone and keep the eyes on the true target while being fully aware of the practical necessity and limitation of proxies. 
+
+The critical question right now is: **SAE and learned features are promising. How to create principled evaluation and iterate faster?**
+
+-- 
 
