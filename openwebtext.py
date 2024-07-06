@@ -2,10 +2,8 @@ import os
 
 import tiktoken
 from datasets import load_dataset, load_from_disk
+import numpy as np
 import torch
-
-torch.manual_seed(64)
-
 
 def load_owt(path="data/owt_tokenized"):
     ds = load_from_disk(path)
@@ -13,8 +11,8 @@ def load_owt(path="data/owt_tokenized"):
     return ds
 
 
-def sample(dataset, batch_size, seq_len=64):
-    batch_seq = torch.randint(0, len(dataset), (batch_size,))
+def sample(dataset, batch_size, rng: np.random.Generator, seq_len=64):
+    batch_seq = rng.integers(0, len(dataset), (batch_size,))
     bin = []
     for r in dataset.select(batch_seq):
         assert (
@@ -22,7 +20,7 @@ def sample(dataset, batch_size, seq_len=64):
         ), f"input_ids({r['len']}) is shorter than seq_len={seq_len}"
 
         ptr_max = r["len"] - seq_len
-        ptr_start = torch.randint(0, ptr_max, ())
+        ptr_start = rng.integers(0, ptr_max)
         segment = r["input_ids"][ptr_start : ptr_start + seq_len]
         segment = torch.tensor(segment, dtype=torch.long)
         bin.append(segment)

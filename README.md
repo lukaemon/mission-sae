@@ -376,9 +376,8 @@ Snippets aboves are beautiful. Improvement is not binary, but a multi-dimensiona
 
 The critical question right now is: **SAE and learned features are promising. How to create principled evaluation and iterate faster?**
 
+# 0706
+7hr training data generation starts. Now I can relate to the mental state of `Mark Watney` during solar power charging session. One big difference: I can take a walk to a beautiful beach or park, he was stuck in a minivan size rover. Poor man...
+
 -- 
 
-Start training 32k SAE for gpt2 using paper's spec. 
-
-# 0706
-7hr training data generation starts. Now I can relate to the mental state of `Mark Watney` during solar power charging session. One big difference: I can take a walk to a beautiful beach or park, he was stuck in a minivan size rover.

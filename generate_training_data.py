@@ -22,8 +22,12 @@ from tqdm import tqdm
 from openwebtext import load_owt, sample
 
 torch.set_grad_enabled(False)
+
 seq_len = 64  # default value of all experiments per paper
 d_model = 768  # gpt2 small
+
+seed = 64
+rng = np.random.default_rng(seed=64)  # explicit control of random seed
 
 data_dir = Path("data")
 data_dir.mkdir(parents=True, exist_ok=True)
@@ -55,18 +59,18 @@ if __name__ == "__main__":
     
     tpb = args.batch_size * seq_len
     total = args.n_step * tpb
-
     print(f"start data gereration: {args.n_step=:,}, {tpb=:,}, {total=:,}")
 
-    with tqdm(range(args.n_step), desc="generating data", unit="step") as pbar:
-        for i in pbar:
-            batch_bt = sample(ds, args.batch_size)
-            hook_fn = partial(hook_fn_save_act, step=i, mmap_act_nbd=mmap_act_nbd)
-            gpt2.run_with_hooks(
-                batch_bt,
-                return_type=None,
-                fwd_hooks=[(utils.get_act_name("resid_post", layer=args.target_layer), hook_fn)],
-            )
+    
+    for i in tqdm(range(args.n_step), desc="generating data", unit="step"):
+        hook_fn = partial(hook_fn_save_act, step=i, mmap_act_nbd=mmap_act_nbd)
+        
+        batch_bt = sample(ds, args.batch_size, rng=rng)
+        gpt2.run_with_hooks(
+            batch_bt,
+            return_type=None,
+            fwd_hooks=[(utils.get_act_name("resid_post", layer=args.target_layer), hook_fn)],
+        )
     
     mmap_act_nbd.flush()
     print(f"data saved to {output_path}")
