@@ -407,3 +407,37 @@ Oh, `lr 4e-4` it is.
 -- 
 
 32k SAE is cooked. Would leave 128k to cook over night. 
+
+# 0707
+32k and 128k SAE are ready for eval. 
+
+--
+
+I trained the wrong model. In the open source code:
+```python
+class TiedTranspose(nn.Module):
+    def __init__(self, linear: nn.Linear):
+        super().__init__()
+        self.linear = linear
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        assert self.linear.bias is None
+        return F.linear(x, self.linear.weight.t(), None)
+
+    @property
+    def weight(self) -> torch.Tensor:
+        return self.linear.weight.t()
+
+    @property
+    def bias(self) -> torch.Tensor:
+        return self.linear.bias
+```
+
+The encoder and decoder's weight are the same and tied forever. However, in paper:
+> we initialize the encoder to the transpose of the decoder ...
+
+Tied and transpose weight init are very different ideas. I guess `TiedTranspose` is for SAE baseline. Train again.
+
+-- 
+
+Judged by simple MSE eval result, my home cooked SAE 32 is really bad hahaha. Start filling in training details. The first step is renormalize columns of the decoder to be unit-norm after each training step.

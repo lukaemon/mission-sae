@@ -6,11 +6,13 @@ v: gpt vocab size
 l: SAE n latent
 k: topk
 
-Known delta to paper training spec:
-- skip the whole param init section
-- total training token is 8 epoch of 1.31b, paper is 8 epoch of 6.4b ... 
-- no weight EMA
-- no AuxK MSE loss, aka ghost grads
+Didn't follow these paper training spec:
+- whole param init section
+- total training token is 8 epoch of 1.31b, paper is 8 epoch of 6.4b
+- weight EMA
+- AuxK MSE loss, ghost grads
+- decoder normalization per step
+- do not do any loss normalization per batch
 
 
 Don't understand
@@ -62,14 +64,15 @@ if __name__ == "__main__":
     )
     print(f"trn data loaded with shape {act_nbd.shape}")
 
-    n_latents = 2**17
+    n_latents = 2**15
     n_inputs = 768  # gpt2 small d_model
 
-    wandb.init(project="topk_sae", name="sae 128k")
+    wandb.init(project="topk_sae", name="sae 32k dec renorm per step")
 
-    sae = Autoencoder(
-        n_latents, n_inputs, activation=TopK(K), tied=True, normalize=True
-    ).to(device)
+    sae = Autoencoder(n_latents, n_inputs, activation=TopK(K), normalize=True)
+    sae.encoder.weight.data = sae.decoder.weight.data.T  # initialize the encoder to the transpose of the decoder
+    sae = sae.to(device)
+
     optimizer = torch.optim.Adam(sae.parameters(), lr=4e-4)
 
     for epoch in range(args.n_epoch):
@@ -87,11 +90,13 @@ if __name__ == "__main__":
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
 
+                sae.decoder.weight.data /= sae.decoder.weight.data.norm(dim=0)  # renormalize columns of the decoder to be unit-norm
+
                 pbar.set_postfix({"loss": f"{loss.item():.3f}"})
                 wandb.log(dict(loss=loss))
     
-    model_filename = f"sae_128k.pt"
-    model_path = data_dir / model_filename
+    model_filename = f"sae_32k.pt"
+    model_path = data_dir / 'sae' / model_filename
     torch.save(sae.state_dict(), model_path)
     print(f"Model saved to {model_path}")
     
