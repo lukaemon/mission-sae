@@ -8,7 +8,7 @@ k: topk
 
 Known delta to paper training spec:
 - skip the whole param init section
-- total training token is 1.31b, paper=6.4b
+- total training token is 8 epoch of 1.31b, paper is 8 epoch of 6.4b ... 
 - no weight EMA
 - no AuxK MSE loss, aka ghost grads
 
@@ -29,6 +29,7 @@ import transformer_lens.utils as utils
 from sparse_autoencoder.model import Autoencoder, TopK
 from sparse_autoencoder.loss import autoencoder_loss
 from tqdm import tqdm
+import wandb
 
 K = 32  # top k
 seq_len = 64  # default value of all experiments per paper
@@ -44,31 +45,54 @@ if __name__ == "__main__":
     parser.add_argument("--target_layer", type=int, default=8)
     parser.add_argument("--n_step", type=int, default=10_000)
     parser.add_argument("--batch_size", type=int, default=2048)
+    parser.add_argument("--n_epoch", type=int, default=8)
     args = parser.parse_args()
-    
+
     device = utils.get_device()
 
-    trn_data_path = data_dir / f"act_nbd_layer_{args.target_layer}_n_{args.n_step}_bs_{args.batch_size}.bin"
-    act_nbd = np.memmap(str(trn_data_path), dtype=np.float32, mode='r+', shape=(args.n_step, args.batch_size, d_model))
+    trn_data_path = (
+        data_dir
+        / f"act_nbd_layer_{args.target_layer}_n_{args.n_step}_bs_{args.batch_size}.bin"
+    )
+    act_nbd = np.memmap(
+        str(trn_data_path),
+        dtype=np.float32,
+        mode="r+",
+        shape=(args.n_step, args.batch_size, d_model),
+    )
     print(f"trn data loaded with shape {act_nbd.shape}")
 
-    n_latents = 2**15  # 32k
+    n_latents = 2**17
     n_inputs = 768  # gpt2 small d_model
-    sae = Autoencoder(n_latents, n_inputs, activation=TopK(K), tied=True, normalize=True).to(device)
 
-    optimizer = torch.optim.Adam(sae.parameters(), lr=1e-4)
+    wandb.init(project="topk_sae", name="sae 128k")
 
-    print("start trining ...")
-    with tqdm(range(args.n_step), unit="step") as pbar:
-        for step in pbar:
-            act_bd = act_nbd[step]
-            act_bd = torch.from_numpy(act_bd).to(device)
+    sae = Autoencoder(
+        n_latents, n_inputs, activation=TopK(K), tied=True, normalize=True
+    ).to(device)
+    optimizer = torch.optim.Adam(sae.parameters(), lr=4e-4)
 
-            _, latent_bl, recon_bd = sae(act_bd)
-            loss = autoencoder_loss(recon_bd, act_bd, latent_bl, l1_weight=0)
+    for epoch in range(args.n_epoch):
+        print(f"... on epoch {epoch+1}/{args.n_epoch}")
 
-            loss.backward()
-            optimizer.step()
-            optimizer.zero_grad(set_to_none=True)
+        with tqdm(range(args.n_step), unit="step") as pbar:
+            for step in pbar:
+                act_bd = act_nbd[step]
+                act_bd = torch.from_numpy(act_bd).to(device)
 
-            pbar.set_postfix({"loss": f"{loss.item():.3f}"})
+                _, latent_bl, recon_bd = sae(act_bd)
+                loss = autoencoder_loss(recon_bd, act_bd, latent_bl, l1_weight=0.0)
+
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+
+                pbar.set_postfix({"loss": f"{loss.item():.3f}"})
+                wandb.log(dict(loss=loss))
+    
+    model_filename = f"sae_128k.pt"
+    model_path = data_dir / model_filename
+    torch.save(sae.state_dict(), model_path)
+    print(f"Model saved to {model_path}")
+    
+    wandb.finish()
