@@ -1,4 +1,5 @@
 # mission-sae 
+Journal of reproducing [top-k SAE](https://arxiv.org/abs/2406.04093) paper. 
 
 ## 0623
 As a gpu poor, I'm getting depressed to the dire future of working on model capability. Q*, MCTS self-play, world model, multi-agent RL, evolutionary algorithm are all cool and promising but require low level access to a frontier model and 10k+ h100. Last time I check, I'm not in a frontier lab. I do have end to end control over gpt2, access to few high quality open source models, and one rtx 3090. Could burn money on lambdalabs but to what end? 
@@ -452,3 +453,7 @@ Would stop here. Won't deal with these training difference for now.
 - ghost grads
 
 Have mixed feeling about these tweaks and compensations. I'm not in a position to worry about last few percent optimization hacks yet. I bet few months later the recipe would be very different. 
+
+-- 
+
+Trained 32k and 128k SAE with improved training loop. 

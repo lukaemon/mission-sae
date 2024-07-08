@@ -35,11 +35,11 @@ def load_sae(size_k, device, location='resid_post_mlp', layer_index=8):
 
     state_dict = torch.load(model_path)
 
-    model = Autoencoder.from_state_dict(state_dict)
-    model = model.to(device)
+    sae = Autoencoder.from_state_dict(state_dict)
+    sae = sae.to(device)
     print(f"Loaded pretrained SAE {model_path}")
     
-    return model
+    return sae
 
 
 def load_homecook_sae(size_k, device):
@@ -59,4 +59,5 @@ def load_homecook_sae(size_k, device):
     sae.load_state_dict(sd)
     sae = sae.to(device)
 
+    print(f"Loaded pretrained SAE {model_path}")
     return sae

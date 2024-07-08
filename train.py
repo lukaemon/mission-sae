@@ -31,7 +31,7 @@ wandb.require("core")
 K = 32  # top k
 seq_len = 64  # default value of all experiments per paper
 d_model = 768  # gpt2 small
-n_latents = 2**15
+n_latents = 2**17
 n_inputs = 768  # gpt2 small d_model
 
 data_dir = Path("data")
@@ -39,7 +39,9 @@ data_dir.mkdir(parents=True, exist_ok=True)
 
 
 if __name__ == "__main__":
-    wandb.init(project="topk_sae", name="sae 32k (train improv)")
+    # Use Tensor Cores even for fp32 matmuls, 128k training, 30min/epoch -> 20min
+    torch.set_float32_matmul_precision("high")
+    wandb.init(project="topk_sae", name="sae 128k (train improv)")
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_layer", type=int, default=8)
@@ -72,9 +74,9 @@ if __name__ == "__main__":
     sae.encoder.weight.data = sae.decoder.weight.data.T.clone()  # tied init encoder to the transpose of the decoder
     sae.decoder.weight.data /= sae.decoder.weight.data.norm(dim=0)  # init decoder column to be unit-norm
 
-    geometric_median = np.median(compute_geometric_median(sample_act).median)
-    geometric_median = torch.tensor(geometric_median, dtype=torch.float32, device=device)
-    sae.pre_bias.data = geometric_median  # initialize the bias bpre to be the geometric median of a sample set of data points
+    geometric_median_d = compute_geometric_median(sample_act).median
+    geometric_median_d = torch.tensor(geometric_median_d, dtype=torch.float32, device=device)
+    sae.pre_bias.data = geometric_median_d  # initialize the bias bpre to be the geometric median of a sample set of data points
     
     sae = sae.to(device)
 
@@ -101,7 +103,7 @@ if __name__ == "__main__":
                 pbar.set_postfix({"loss": f"{loss.item():.3f}"})
                 wandb.log(dict(loss=loss))
     
-    model_filename = f"sae_32k.pt"
+    model_filename = f"sae_128k.pt"
     model_path = data_dir / 'sae' / model_filename
     torch.save(sae.state_dict(), model_path)
     print(f"Model saved to {model_path}")

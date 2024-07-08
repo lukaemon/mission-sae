@@ -17,7 +17,6 @@ torch.set_grad_enabled(False)
 
 seed = 42
 layer_index = 8
-location = "resid_post_mlp"
 n_batch = 256
 batch_size = 16
 seq_len = 64
@@ -32,10 +31,9 @@ def compute_mse(act_btd, hook, sae, bin):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--size_k", type=int, default=32)
-    parser.add_argument("--use_oai_model", type=int, default=0)
+    parser.add_argument("--oai", type=int, default=0, choices=[0, 1])
     args = parser.parse_args()
 
     if args.size_k not in [32, 128]:
@@ -47,9 +45,9 @@ if __name__ == "__main__":
     
     gpt2 = HookedTransformer.from_pretrained("gpt2", center_writing_weights=False)
     
-    if args.use_oai_model == 0:
+    if args.oai == 0:
         sae = load_homecook_sae(args.size_k, device)
-    elif args.use_oai_model == 1:
+    else:
         sae = load_sae(args.size_k, device)
 
     bin = []
