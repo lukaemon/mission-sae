@@ -5,20 +5,13 @@ d: gpt d_model
 v: gpt vocab size
 l: SAE n latent
 k: topk
+n: training step
 
-Didn't follow these paper training spec:
-- whole param init section
+Difference to paper training spec:
 - total training token is 8 epoch of 1.31b, paper is 8 epoch of 6.4b
-- weight EMA
-- AuxK MSE loss, ghost grads
-- decoder normalization per step
-- do not do any loss normalization per batch
-
-
-Don't understand
 - We project away gradient information parallel to the decoder vectors, to account for interaction between Adam and decoder normalization.
-- By convention, we average the gradient across the batch dimension. Therefore skip eps=6.25e-10. 
-- For the main MSE loss, we compute an MSE normalization constant once at the beginning of training, and do not do any loss normalization per batch.
+- weight EMA
+- ghost grads
 """
 
 import argparse
@@ -26,23 +19,28 @@ from pathlib import Path
 
 import torch
 import numpy as np
+from geom_median.numpy import compute_geometric_median
 
 import transformer_lens.utils as utils
 from sparse_autoencoder.model import Autoencoder, TopK
 from sparse_autoencoder.loss import autoencoder_loss
 from tqdm import tqdm
 import wandb
+wandb.require("core")
 
 K = 32  # top k
 seq_len = 64  # default value of all experiments per paper
 d_model = 768  # gpt2 small
+n_latents = 2**15
+n_inputs = 768  # gpt2 small d_model
 
 data_dir = Path("data")
 data_dir.mkdir(parents=True, exist_ok=True)
 
 
 if __name__ == "__main__":
-
+    wandb.init(project="topk_sae", name="sae 32k (train improv)")
+    
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_layer", type=int, default=8)
     parser.add_argument("--n_step", type=int, default=10_000)
@@ -51,7 +49,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     device = utils.get_device()
-
     trn_data_path = (
         data_dir
         / f"act_nbd_layer_{args.target_layer}_n_{args.n_step}_bs_{args.batch_size}.bin"
@@ -64,13 +61,21 @@ if __name__ == "__main__":
     )
     print(f"trn data loaded with shape {act_nbd.shape}")
 
-    n_latents = 2**15
-    n_inputs = 768  # gpt2 small d_model
 
-    wandb.init(project="topk_sae", name="sae 32k dec renorm per step")
-
+    # initializaiton
     sae = Autoencoder(n_latents, n_inputs, activation=TopK(K), normalize=True)
-    sae.encoder.weight.data = sae.decoder.weight.data.T  # initialize the encoder to the transpose of the decoder
+    
+    sample_act = np.array(act_nbd[-100:]).reshape(-1, n_inputs)  # (100*2048, 768) last 100 step as sample act
+    mse_scale = 1 / ((sample_act - sample_act.mean(0))**2).mean()
+    mse_scale = torch.tensor(mse_scale, dtype=torch.float32, device=device)
+
+    sae.encoder.weight.data = sae.decoder.weight.data.T.clone()  # tied init encoder to the transpose of the decoder
+    sae.decoder.weight.data /= sae.decoder.weight.data.norm(dim=0)  # init decoder column to be unit-norm
+
+    geometric_median = np.median(compute_geometric_median(sample_act).median)
+    geometric_median = torch.tensor(geometric_median, dtype=torch.float32, device=device)
+    sae.pre_bias.data = geometric_median  # initialize the bias bpre to be the geometric median of a sample set of data points
+    
     sae = sae.to(device)
 
     optimizer = torch.optim.Adam(sae.parameters(), lr=4e-4)
@@ -83,14 +88,15 @@ if __name__ == "__main__":
                 act_bd = act_nbd[step]
                 act_bd = torch.from_numpy(act_bd).to(device)
 
-                _, latent_bl, recon_bd = sae(act_bd)
-                loss = autoencoder_loss(recon_bd, act_bd, latent_bl, l1_weight=0.0)
+                _, _, recon_bd = sae(act_bd)
+                loss = ((recon_bd - act_bd) ** 2).mean() * mse_scale
 
                 loss.backward()
+
+                sae.decoder.weight.data /= sae.decoder.weight.data.norm(dim=0)  # renormalize decoder column to be unit-norm
+
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
-
-                sae.decoder.weight.data /= sae.decoder.weight.data.norm(dim=0)  # renormalize columns of the decoder to be unit-norm
 
                 pbar.set_postfix({"loss": f"{loss.item():.3f}"})
                 wandb.log(dict(loss=loss))

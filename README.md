@@ -433,11 +433,22 @@ class TiedTranspose(nn.Module):
         return self.linear.bias
 ```
 
-The encoder and decoder's weight are the same and tied forever. However, in paper:
+The encoder and decoder's weight are tied forever. However, in paper:
 > we initialize the encoder to the transpose of the decoder ...
 
-Tied and transpose weight init are very different ideas. I guess `TiedTranspose` is for SAE baseline. Train again.
+Tied weights and transpose weight init are very different ideas. I guess `TiedTranspose` is for SAE ReLU baseline.  
+Train again.
 
--- 
+# 0708
+Filling in training nuances:
+- [x] init and renormalize columns of the decoder to be unit-norm
+- [x] compute an MSE normalization constant once at the beginning of training, and do not do any loss normalization per batch.
+- [x] initialize the bias b_pre to be the geometric median of a sample set of data points
 
-Judged by simple MSE eval result, my home cooked SAE 32 is really bad hahaha. Start filling in training details. The first step is renormalize columns of the decoder to be unit-norm after each training step.
+Would stop here. Won't deal with these training difference for now. 
+- total training token is 8 epoch of 1.31b, paper is 8 epoch of 6.4b
+- We project away gradient information parallel to the decoder vectors, to account for interaction between Adam and decoder normalization.
+- weight EMA
+- ghost grads
+
+Have mixed feeling about these tweaks and compensations. I'm not in a position to worry about last few percent optimization hacks yet. I bet few months later the recipe would be very different. 
