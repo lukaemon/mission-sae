@@ -1,4 +1,3 @@
-import plotly.io as pio
 import plotly.express as px
 import transformer_lens.utils as utils
 

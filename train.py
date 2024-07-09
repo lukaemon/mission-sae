@@ -23,7 +23,6 @@ from geom_median.numpy import compute_geometric_median
 
 import transformer_lens.utils as utils
 from sparse_autoencoder.model import Autoencoder, TopK
-from sparse_autoencoder.loss import autoencoder_loss
 from tqdm import tqdm
 import wandb
 wandb.require("core")
@@ -32,7 +31,6 @@ K = 32  # top k
 seq_len = 64  # default value of all experiments per paper
 d_model = 768  # gpt2 small
 n_latents = 2**17
-n_inputs = 768  # gpt2 small d_model
 
 data_dir = Path("data")
 data_dir.mkdir(parents=True, exist_ok=True)
@@ -65,9 +63,9 @@ if __name__ == "__main__":
 
 
     # initializaiton
-    sae = Autoencoder(n_latents, n_inputs, activation=TopK(K), normalize=True)
+    sae = Autoencoder(n_latents, d_model, activation=TopK(K), normalize=True)
     
-    sample_act = np.array(act_nbd[-100:]).reshape(-1, n_inputs)  # (100*2048, 768) last 100 step as sample act
+    sample_act = np.array(act_nbd[-100:]).reshape(-1, d_model)  # (100*2048, 768) last 100 step as sample act
     mse_scale = 1 / ((sample_act - sample_act.mean(0))**2).mean()
     mse_scale = torch.tensor(mse_scale, dtype=torch.float32, device=device)
 
