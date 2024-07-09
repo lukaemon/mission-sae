@@ -1,5 +1,5 @@
 # mission-sae 
-Journal of reproducing [top-k SAE](https://arxiv.org/abs/2406.04093) paper. 
+Journal of reproducing [top-k SAE](https://arxiv.org/abs/2406.04093) paper. Jump to last entry for `tldr`.
 
 ## 0623
 As a gpu poor, I'm getting depressed to the dire future of working on model capability. Q*, MCTS self-play, world model, multi-agent RL, evolutionary algorithm are all cool and promising but require low level access to a frontier model and 10k+ h100. Last time I check, I'm not in a frontier lab. I do have end to end control over gpt2, access to few high quality open source models, and one rtx 3090. Could burn money on lambdalabs but to what end? 
@@ -64,7 +64,7 @@ The gpt2 moment question is: what is missing to make us confident wrt safety to 
 
 ... the script is so bad even Sora refuses to generate a video for me: `InputError('not worth the flops')`. 
 
-# 0627
+## 0627
 Finished first pass on `t_lens` library demo. What a great document. Operation details aside, the most memorable 'aha' is `induction head`. 
 
 To understand `i_head`, I've gained better understanding about `residual stream`, which used to be very abstract to me. 
@@ -97,14 +97,14 @@ Somehow I feel action grounds more world experiences than language. In a way, la
 
 Silly questions... Time for a walk. 
 
-# 0628
+## 0628
 `Activation patching` is equivalent to 'action produces information.' It produces the best kind of information that includes both observation and a strong causal relationship.
 
 --
 
 Induction head reproduced. Feeling comfortable with hooks now. Ready to take on 4.1 downstream loss with topk SAE on gpt2 small. Seriously, can't imagine what kind of Frankenstein code I would have to generate to mess with the model if `t_lens` doesn't exist. Must be fun to watch ...
 
-# 0629
+## 0629
 Typical eval on SAE is sparsity and reconstruction. Since the sparsity is directly controlled by topk function, I could play with MSE as a warm up. OAI released 2 SAE for gpt2 small: `v5_32k` and `v5_128k`. That's 2 points in the fig 1 right. ![](asset/topk_sae_fig1.png)
 
 It occurs to me that scaling law research is actually very similar to astrophysics. 
@@ -129,7 +129,7 @@ But hey this is frontier research. Just keep exploring and be ready to change wh
 MSE for 32k and 128k SAE, with `openwebtext` data is done. But somehow, I don't know if I'm doing it right. Hmmmm...
 
 
-# 0630
+## 0630
 Delta cross entropy for 32k and 128k SAE is easy. Small tweak of MSE code would do.
 
 In paper:
@@ -168,7 +168,7 @@ After all morning messing around and I realize OAI SAE is trained on OAI gpt2. U
 
 I could still salvage the situation. OAI SAE 32k reconstruction activation has delta loss `~0.1` over gpt2-small. Assuming my from scratch SAE on stanford gpt2 has the same delta, according to step v. loss figure above, that puts it between step 58k(`~3.54`) and 96k(`~3.50`). Back of envelope interpolation says that is around 86k step loss level, `21.5%`. Will revisit this estimation later. 
 
-# 0701
+## 0701
 Reread the topk SAE paper for the rest of 3/4 eval metrics to pick a next target wrt `feasibility`, `expected learning` and `skill issue`. Yeah, skill issue ... It has been all about skill issue. Since when it's not. To some extend, being gpu poor is just another skill issue in excuse of lack of physical resource. 
 
 **4.2 Probe loss**:  
@@ -221,7 +221,7 @@ Just be honest and choose wisely.
 
 Why repeat such obvious meta learning heuristic? Because I'm king of deadlock due to bad taste on choosing challenges. Take a while to recognize the problem and start self-correcting process. 
 
-# 0702
+## 0702
 > ... I could already simulate the whole code blah blah ...
 
 And got stuck for one hour to understand what the paper really want to do. You see, this naive confidence, preformed expectation, and reality check combo is the effective learning triangle. Bruise ego is the only side effect. The missing piece is I don't know how SAE latent ablation work in practice. Go figure. 
@@ -261,7 +261,7 @@ The first draft is too ugly. And the number doesn't match paper's. Try again.
 
 Second draft is better, but the number still doesn't match. There are some details I can't get right. Missing info from the paper, and no open source code of this part. Guess the details of ablation and normalization are too common sense to open source. Have to figure out and fill in the blanks, masked language modelling style. 
 
-# 0703
+## 0703
 Most incremental problems could be solved by a long walk and a good night sleep. 3 missing pieces prevented me from reaching paper's number. One bug, one change, and one new understanding. 
 
 The bug is silly. I forgot to change feature index while looping through topk 32 features for ablation. 1 char change fix. 
@@ -298,7 +298,7 @@ It doesn't have to be video or action. It could be inner monologue or subconscio
 
 I don't know ... Time to walk.
 
-# 0704
+## 0704
 Happy Independence day. Wake up to unmotivated/tired body and mind. Let me channel the inspiring spirit from the past and get the fuck back to work! (doom scrolling x.com)
 
 --
@@ -364,7 +364,7 @@ Every time I read, I found more depth to this deceptively simple architecture. G
 
 The biggest hit today is functional perspective toward interpretation. Imagine how hard it would be to track down seemingly infinite combination of input dependent transformer circuit, or FFN neuron in super position. Instead, choose a middle layer post MLP activation, train a SAE and focus resource on making sense of them, especially the automatic interpretation route. These SAE features are more easier to interpret and intervene.
 
-# 0705
+## 0705
 `<reading_note>` [Circuits Updates - June 2024](https://transformer-circuits.pub/2024/june-update/index.html)
 
 The info fill in the blank between papers and provide a source for process supervision on how frontier lab researchers think, plan and act. The curated research by other groups is a glimpse into their fucus and taste. Overall, signal/noise is off the chart. Woosa~
@@ -379,7 +379,7 @@ Snippets aboves are beautiful. Improvement is not binary, but a multi-dimensiona
 
 The critical question right now is: **SAE and learned features are promising. How to create principled evaluation and iterate faster?**
 
-# 0706
+## 0706
 7hr training data generation starts. Now I can relate to the mental state of `Mark Watney` during solar power charging session. One big difference: I can take a walk to a beautiful beach or park, he was stuck in a minivan size rover. Poor man...
 
 -- 
@@ -409,7 +409,7 @@ Oh, `lr 4e-4` it is.
 
 32k SAE is cooked. Would leave 128k to cook over night. 
 
-# 0707
+## 0707
 32k and 128k SAE are ready for eval. 
 
 --
@@ -440,7 +440,7 @@ The encoder and decoder's weight are tied forever. However, in paper:
 Tied weights and transpose weight init are very different ideas. I guess `TiedTranspose` is for SAE ReLU baseline.  
 Train again.
 
-# 0708
+## 0708
 Filling in training nuances:
 - [x] init and renormalize columns of the decoder to be unit-norm
 - [x] compute an MSE normalization constant once at the beginning of training, and do not do any loss normalization per batch.
@@ -464,3 +464,23 @@ Trained 32k and 128k SAE with improved training loop.
 | Delta Loss      | 0.9206         | 0.1336  | 0.8393          | 0.0816   |
 | Ablate Sparsity | 18.93%         | 25.27%  | 16.25%          | 17.57%   |
 
+## 0709 outro
+What I learn:
+- The concept of SAE, residual stream, transformer circuit and task vector.
+- Experience of inspecting and manipulating transformer runtime internal state.
+- Basic SAE eval technique and the field needs more, better and automated eval. 
+- Basic SAE training loop.
+
+What I miss:
+- Didn't fully reproduce all eval. Passed linear probe and N2G.
+- Didn't fully reproduce all training optimization. The source code even includes triton kernels. 
+
+Still want to learn more. The model I trained is bad. The plan is to kick start iterations of:
+1. Using SAE feature for research and application.
+2. Train better SAE. 
+
+I'm not committed to SAE or merch interp, but to the pursuit of understanding on how model works and use it for control and capability.
+
+--
+
+Next step: read [An Extremely Opinionated Annotated List of My Favourite Mechanistic Interpretability Papers v2](https://www.alignmentforum.org/posts/NfFST5Mio7BCAQHPA/an-extremely-opinionated-annotated-list-of-my-favourite-1) by Neel Nanda.
