@@ -457,3 +457,10 @@ Have mixed feeling about these tweaks and compensations. I'm not in a position t
 -- 
 
 Trained 32k and 128k SAE with improved training loop. 
+
+| Eval            | homecooked 32k | OAI 32k | homecooked 128k | OAI 128k |
+|-----------------|----------------|---------|-----------------|----------|
+| MSE             | 2.671          | 0.1554  | 4.0007          | 0.1222   |
+| Delta Loss      | 0.9206         | 0.1336  | 0.8393          | 0.0816   |
+| Ablate Sparsity | 18.93%         | 25.27%  | 16.25%          | 17.57%   |
+

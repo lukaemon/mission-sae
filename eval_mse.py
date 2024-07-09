@@ -14,6 +14,7 @@ from openwebtext import load_owt, sample
 from pretrained_sae import load_sae, load_homecook_sae
 
 torch.set_grad_enabled(False)
+torch.set_float32_matmul_precision("high")
 
 seed = 42
 layer_index = 8
