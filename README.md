@@ -484,3 +484,13 @@ I'm not committed to SAE or merch interp, but to the pursuit of understanding on
 --
 
 Next step: read [An Extremely Opinionated Annotated List of My Favourite Mechanistic Interpretability Papers v2](https://www.alignmentforum.org/posts/NfFST5Mio7BCAQHPA/an-extremely-opinionated-annotated-list-of-my-favourite-1) by Neel Nanda.
+
+
+## 0715
+> We subtract the mean over the d_model dimension and normalize to all inputs to unit norm, prior to passing to the autoencoder (or computing reconstruction errors).
+
+Didn't do this. Fix it. 
+- [x] regenerate training data, ~5 hrs
+- [ ] retrain 32k and 128k SAE
+- [ ] update eval script?
+- [ ] redo all eval

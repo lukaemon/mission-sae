@@ -22,6 +22,7 @@ from tqdm import tqdm
 from openwebtext import load_owt, sample
 
 torch.set_grad_enabled(False)
+torch.set_float32_matmul_precision("high")
 
 seq_len = 64  # default value of all experiments per paper
 d_model = 768  # gpt2 small
@@ -35,6 +36,9 @@ data_dir.mkdir(parents=True, exist_ok=True)
 
 def hook_fn_save_act(act_btd, hook, step, mmap_act_nbd):
     act_bd = act_btd[:, -1].detach().cpu().numpy()
+    act_bd -= act_bd.mean(axis=-1, keepdims=True)
+    act_bd /= np.linalg.norm(act_bd, axis=-1, keepdims=True)
+    
     mmap_act_nbd[step] = act_bd
 
 
