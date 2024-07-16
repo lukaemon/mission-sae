@@ -37,9 +37,8 @@ data_dir.mkdir(parents=True, exist_ok=True)
 
 
 if __name__ == "__main__":
-    # Use Tensor Cores even for fp32 matmuls, 128k training, 30min/epoch -> 20min
     torch.set_float32_matmul_precision("high")
-    wandb.init(project="topk_sae", name="sae 128k (train improv)")
+    wandb.init(project="topk_sae", name="sae 128k (update trn data)")
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_layer", type=int, default=8)

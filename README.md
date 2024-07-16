@@ -491,6 +491,18 @@ Next step: read [An Extremely Opinionated Annotated List of My Favourite Mechani
 
 Didn't do this. Fix it. 
 - [x] regenerate training data, ~5 hrs
-- [ ] retrain 32k and 128k SAE
-- [ ] update eval script?
-- [ ] redo all eval
+
+## 0716
+Realized after electricity is burned: no need to regenerate training data. Just normalize activation during training would do. 
+- [x] retrain 32k and 128k SAE
+- [x] redo eval
+
+--
+
+| Eval            | homecooked 32k | OAI 32k | homecooked 128k | OAI 128k |
+|-----------------|----------------|---------|-----------------|----------|
+| MSE             | 0.2083         | 0.0064  | 0.2012          | 0.0051   |
+| Delta Loss      | 0.6027         | 0.1336  | 0.5963          | 0.0816   |
+| Ablate Sparsity | 21.54%         | 25.27%  | 27.41%          | 17.57%   |
+
+The loss curve is better. These silent bugs that chipping my model performance away ... How many of them still exist? 
